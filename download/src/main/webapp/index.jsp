@@ -20,7 +20,12 @@
 	</style>
 </head>
 <body class="prod">
-<% String what=java.net.URLEncoder.encode(request.getParameter("what"), "UTF-8"); %>
+<% String what = request.getParameter("what");
+   if(what==null) {
+	   response.sendRedirect("http://www.brockmann-consult.de/beam");
+	   return;
+   }
+   what = java.net.URLEncoder.encode(what, "UTF-8"); %>
 	<h1><%=what%></h1>
 	<p>You have requested to download <b><%=what%></b>.</p>
 	<%
