@@ -36,8 +36,8 @@
 		String mail     = cookies.containsKey("download_mail")     ? cookies.get("download_mail") : ""; 
 	%>
 	<p>
-		We'd like to know more about our users. You are free to leave the fields 
-		blank and just continue with the download.
+		We'd like to know more about our users. <b>This survey is completely optional.</b> 
+		You are free to leave the fields blank and just continue with the download.
 	</p>
 	<p>
 		We'll use your data only internally and will never give them away. 
