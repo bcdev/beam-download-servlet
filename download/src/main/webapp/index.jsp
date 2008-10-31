@@ -57,7 +57,7 @@
 		<input type="checkbox" name="setCookies" value="on" checked="checked">
 		Remember these settings for later downloads? (cookies will be set)
 		<br/><br/> 
-		<input type="submit" name="submit" value="download <%=what %>" style="font-weight: bold; background-color: #EEEEBB;"/>
+		<input type="submit" name="submit" value="Download" style="font-weight: bold; background-color: #EEEEBB;"/>
 	</form>
 	<%
 	} else {
