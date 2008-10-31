@@ -46,16 +46,17 @@
 	</p>
 	<form action="get" method="post">
 		<input type="hidden" name="what" value="<%=what%>"/>
-		Please tell us, where you are from:<br/> 
-		<input type="text" name="location" value="<%=location %>" size="40"/><br/><br/> 
+		Please tell us, where you are from:<br/>
+		<select name="location" size="1"><%=DownloadServlet.getCountrySelectOptions(request) %></select><br/><br/> 
 		We'd like to know, who you are: <br/>
 		<input type="text" name="name" value="<%=name %>" size="40"/><br/><br/> 
 		If you like to be notified of new releases, please provide your mail address (very low frequency):<br/>
 		<input type="text" name="mail" value="<%=mail %>" size="40"/><br/><br/> 
 		What do you use BEAM for? Is there anything else, you'd like us to know?<br/>
 		<textarea name="comment" value="" cols="40" rows="6"></textarea><br/><br/> 
-		Should we remember these values for later downloads (cookies will be set - check if ok)?
-		<input type="checkbox" name="setCookies" value="on" checked="checked"><br/><br/> 
+		<input type="checkbox" name="setCookies" value="on" checked="checked">
+		Remember these settings for later downloads? (cookies will be set)
+		<br/><br/> 
 		<input type="submit" name="submit" value="download <%=what %>" style="font-weight: bold; background-color: #EEEEBB;"/>
 	</form>
 	<%
