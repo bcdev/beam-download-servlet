@@ -90,7 +90,15 @@ public class DownloadServlet extends HttpServlet {
 	}
     
     public static String getCountry(HttpServletRequest request) {
-		Location location = geoLookupService.getLocation(request.getRemoteAddr());
+		String remoteAddr = request.getRemoteAddr();
+		if(remoteAddr != null) {
+			if(remoteAddr.startsWith("192.168.101")) {
+				return "Brockmann-Consultanien";
+			} else if(remoteAddr.startsWith("127.0.0")) {
+				return "Localhostien";
+			}
+		}
+		Location location = geoLookupService.getLocation(remoteAddr);
 		if(location==null || location.countryName==null) {
 			return "";
 		} else {
