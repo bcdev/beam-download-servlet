@@ -1,19 +1,18 @@
-
 <Context path="/download">
 
-	<Resource name="jdbc/download" 
-	          auth="Container"
-              type="javax.sql.DataSource" 
+        <Resource name="jdbc/download"
+                  auth="Container"
+              type="javax.sql.DataSource"
               driverClassName="com.mysql.jdbc.Driver"
-              url="jdbc:mysql://localhost:3306/download?autoReconnect=true"
-              username="download" 
-              password="download" 
-              maxActive="20" 
+              url="jdbc:mysql://192.168.101.66:3306/download?autoReconnect=true"
+              username="download"
+              password="ichbindiedownloadanwendung"
+              maxActive="20"
               maxIdle="10"
               maxWait="-1"
-              /> 
-              
-    <Environment name="downloadDirectory" value="/var/downloads/" type="java.lang.String" override="false"/>
-    <Environment name="geoLookupDatabase" value="/home/olaf/Desktop/downloads/GeoLiteCity.dat" type="java.lang.String" override="false"/>
-              
+              />
+
+    <Environment name="downloadDirectory" value="/fs1/beamdownloads/downloads/" type="java.lang.String" override="false"/>
+    <Environment name="geoLookupDatabase" value="/fs1/beamdownloads/GeoLiteCity.dat" type="java.lang.String" override="false"/>
+
 </Context>
