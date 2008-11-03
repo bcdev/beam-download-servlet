@@ -38,6 +38,8 @@ import com.maxmind.geoip.LookupService;
 public class DownloadServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final String ACCESS_URI = "/access/";
+
 	private static File path = null;
 	private static LookupService geoLookupService = null;
 	private static long nextId = new Date().getTime();
@@ -316,19 +318,41 @@ public class DownloadServlet extends HttpServlet {
 		}
 	}
 
-	@Override
+	/**
+	 * Provide GET access only with 'special' URL, e.g. for automatic updater.
+	 * (The special url currently is /access/filename)
+	 * Browsers should come through the registration page and ask people about
+	 * some of their data.<br/>
+	 * GET access might later be filtered by user agent or similar.
+	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		response.sendRedirect("index.jsp?what=" + request.getParameter("what"));
+		String uri = request.getRequestURI();
+		String prefix = request.getContextPath() + ACCESS_URI;
+		if(uri.startsWith(prefix)) {
+			// it seems to be the automatic updater - this is a very basic test
+			// as it only needs to know the URL
+			String what = uri.substring(prefix.length());
+			System.out.println(what);
+			download(what, request, response);
+		} else {
+			response.sendRedirect("index.jsp?what=" + request.getParameter("what"));
+		}
 	}
 
-	@Override
+	/**
+	 * Provide POST access, that usually comes from the registration page and
+	 * logs user provided data into the database.
+	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String what = URLEncoder.encode(request.getParameter("what"), "UTF-8");
+		download(what, request, response);
+	}
+
+	private void download(String what, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		handleCookies(request, response);
-		Location location = geoLookupService.getLocation(request
-				.getRemoteAddr());
+		Location location = geoLookupService.getLocation(request.getRemoteAddr());
 		int status = 200;
 		try {
 			status = streamContent(response, what);
@@ -336,7 +360,7 @@ public class DownloadServlet extends HttpServlet {
 		}
 		logToDb(request, response, what, status, location);
 	}
-
+	
 	public static String getCountry(HttpServletRequest request) {
 		String remoteAddr = request.getRemoteAddr();
 		if (remoteAddr != null) {
