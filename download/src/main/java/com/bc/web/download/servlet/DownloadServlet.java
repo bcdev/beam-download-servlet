@@ -355,8 +355,10 @@ public class DownloadServlet extends HttpServlet {
 		Location location = geoLookupService.getLocation(request.getRemoteAddr());
 		int status = 200;
 		try {
+			System.out.println("Starting download of " + what + " to " + ( location!=null ? (""+location.city + " " + location.countryName + " (" + request.getRemoteAddr() + ")"):"unknown") );
 			status = streamContent(response, what);
 		} finally {
+			System.out.println("Finished download of " + what + " to " + ( location!=null ? (""+location.city + " " + location.countryName + " (" + request.getRemoteAddr() + ")"):"unknown") );
 		}
 		logToDb(request, response, what, status, location);
 	}
