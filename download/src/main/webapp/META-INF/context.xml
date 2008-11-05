@@ -1,18 +1,18 @@
 <Context path="/download">
 
         <Resource name="jdbc/download"
-                  auth="Container"
+              auth="Container"
               type="javax.sql.DataSource"
               driverClassName="com.mysql.jdbc.Driver"
-              url="jdbc:mysql://192.168.101.66:3306/download?autoReconnect=true"
+              url="jdbc:mysql://localhost:3306/download?autoReconnect=true"
               username="download"
-              password="ichbindiedownloadanwendung"
+              password="sowasvoneinerdownloadanwendung"
               maxActive="20"
               maxIdle="10"
               maxWait="-1"
               />
 
-    <Environment name="downloadDirectory" value="/fs1/beamdownloads/downloads/" type="java.lang.String" override="false"/>
-    <Environment name="geoLookupDatabase" value="/fs1/beamdownloads/GeoLiteCity.dat" type="java.lang.String" override="false"/>
+    <Environment name="downloadDirectory" value="/home/beam/downloads/" type="java.lang.String" override="false"/>
+    <Environment name="geoLookupDatabase" value="/home/beam/GeoLiteCity.dat" type="java.lang.String" override="false"/>
 
 </Context>

@@ -357,6 +357,8 @@ public class DownloadServlet extends HttpServlet {
 		try {
 			System.out.println("Starting download of " + what + " to " + ( location!=null ? (""+location.city + " " + location.countryName + " (" + request.getRemoteAddr() + ")"):"unknown") );
 			status = streamContent(response, what);
+		} catch (Exception e) {
+			e.printStackTrace();
 		} finally {
 			System.out.println("Finished download of " + what + " to " + ( location!=null ? (""+location.city + " " + location.countryName + " (" + request.getRemoteAddr() + ")"):"unknown") );
 		}
@@ -529,8 +531,7 @@ public class DownloadServlet extends HttpServlet {
 		return parameter;
 	}
 
-	private int streamContent(HttpServletResponse response, String what)
-			throws IOException {
+	private int streamContent(HttpServletResponse response, String what) {
 		try {
 			FileInputStream in = null;
 			File theFile = new File(path, sanitizeFilename(what));
