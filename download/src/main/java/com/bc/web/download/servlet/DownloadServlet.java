@@ -454,6 +454,9 @@ public class DownloadServlet extends HttpServlet {
 	}
 
 	private static String escape(String value) {
+		if(value == null) {
+			return "";
+		}
 		value = value.replace('"', ' ');
 		value = value.replace('<', '(');
 		value = value.replace('>', ')');
