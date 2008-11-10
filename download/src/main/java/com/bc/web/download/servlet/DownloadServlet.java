@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -332,11 +333,11 @@ public class DownloadServlet extends HttpServlet {
 		if(uri.startsWith(prefix)) {
 			// it seems to be the automatic updater - this is a very basic test
 			// as it only needs to know the URL
-			String what = uri.substring(prefix.length());
+			String what = encode(uri.substring(prefix.length()));
 			System.out.println(what);
 			download(what, request, response);
 		} else {
-			response.sendRedirect("index.jsp?what=" + request.getParameter("what"));
+			response.sendRedirect("index.jsp?what=" + encode(request.getParameter("what")));
 		}
 	}
 
@@ -346,7 +347,9 @@ public class DownloadServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String what = URLEncoder.encode(request.getParameter("what"), "UTF-8");
+		request.setCharacterEncoding("UTF-8");
+		System.out.println(request.getCharacterEncoding());
+		String what = encode(request.getParameter("what"));
 		download(what, request, response);
 	}
 
@@ -423,15 +426,40 @@ public class DownloadServlet extends HttpServlet {
 		HashMap<String, String> cookies = new HashMap<String, String>();
 		if (c != null)
 			for (Cookie cookie : c) {
-				try {
-					cookies.put(cookie.getName(), URLEncoder.encode(cookie
-							.getValue(), "UTF-8"));
-				} catch (UnsupportedEncodingException ignore) {
-				}
+//				cookies.put(cookie.getName(), encode(cookie.getValue());
+				cookies.put(cookie.getName(), decode(cookie.getValue()));
 			}
 		return cookies;
 	}
 
+	private static String decode(String value) {
+		try {
+			return escape(URLDecoder.decode(value, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			return escape(value);
+		}
+	}
+
+	private static String encode(String value) {
+		if(value == null) {
+			value = "";
+		}
+		try {
+			return URLEncoder.encode(escape(value), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return value;
+		}
+	}
+
+	private static String escape(String value) {
+		value = value.replace('"', ' ');
+		value = value.replace('<', '(');
+		value = value.replace('>', ')');
+		value = value.replace('\'', ' ');
+		value = value.replace('\n', ' ');
+		return value;
+	}
+	
 	private static void doit(HttpServletRequest request,
 			HttpServletResponse response, Map<String, String[]> parameters,
 			Map<String, String> cookies, String key) {
@@ -441,8 +469,12 @@ public class DownloadServlet extends HttpServlet {
 			if (names != null && names.length > 0) {
 				if (cookieKey == null || !cookieKey.equals(names[0])) {
 					String uri = request.getContextPath();
-					response.addCookie(createCookie("download_" + key,
-							names[0], uri));
+					try {
+						response.addCookie(createCookie("download_" + key,
+								encode(names[0]), uri));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -485,11 +517,11 @@ public class DownloadServlet extends HttpServlet {
 			stmt.setString(i++, request.getRequestURI());
 			stmt.setInt(i++, status);
 			stmt.setLong(i++, System.currentTimeMillis() / 1000);
-			setStmtString(stmt, i++, request.getParameter("name"), 100);
-			setStmtString(stmt, i++, request.getParameter("mail"), 100);
-			setStmtString(stmt, i++, request.getParameter("location"), 100);
-			setStmtString(stmt, i++, request.getParameter("comment"), 512);
-			setStmtString(stmt, i++, request.getParameter("what"), 256);
+			setStmtString(stmt, i++, escape(request.getParameter("name")), 100);
+			setStmtString(stmt, i++, escape(request.getParameter("mail")), 100);
+			setStmtString(stmt, i++, escape(request.getParameter("location")), 100);
+			setStmtString(stmt, i++, escape(request.getParameter("comment")), 512);
+			setStmtString(stmt, i++, escape(request.getParameter("what")), 256);
 			if (location != null) {
 				setStmtString(stmt, i++, location.city, 128);
 				setStmtString(stmt, i++, location.countryCode, 10);

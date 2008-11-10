@@ -45,7 +45,7 @@
 		Anonymous statistics (e.g. about the geographical locations of our users) 
 		may be posted or shared with others. 
 	</p>
-	<form action="get" method="post">
+	<form action="get" method="post" accept-charset="utf-8">
 		<input type="hidden" name="what" value="<%=what%>"/>
 		<b>Please tell us, where you are from:</b><br/>
 		<select name="location" size="1"><%=DownloadServlet.getCountrySelectOptions(request) %></select><br/><br/> 
