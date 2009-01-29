@@ -375,6 +375,8 @@ public class DownloadServlet extends HttpServlet {
 				return "Brockmann-Consultanien";
 			} else	if (remoteAddr.equals("141.4.215.14")) {
 				return "Brockmann-Consultanien";
+			} else	if (remoteAddr.equals("141.4.215.32")) {
+				return "Brockmann-Consultanien";
 			} else if (remoteAddr.startsWith("127.0.0")) {
 				return "Localhostien";
 			}
