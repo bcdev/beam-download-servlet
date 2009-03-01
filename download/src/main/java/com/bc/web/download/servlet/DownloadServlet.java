@@ -355,6 +355,19 @@ public class DownloadServlet extends HttpServlet {
 
 	private void download(String what, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		handleCookies(request, response);
+		// currently database dump downloads are handled by the same
+		// routine - cheap safety measures, so that not everyone
+		// can download the mail addresses from everywhere.
+		if(what.startsWith("mysql")) {
+			if(!request.getRemoteAddr().startsWith("141.4.215")) {
+				ServletOutputStream out = response.getOutputStream();
+				response.sendError(401, "Access denied");
+				System.out.println("Denied access to mysql data from " + request.getRemoteAddr());
+				return;
+			} else {
+				System.out.println("Allowing access to mysql data from " + request.getRemoteAddr());
+			}
+		}
 		Location location = geoLookupService.getLocation(request.getRemoteAddr());
 		int status = 200;
 		try {
