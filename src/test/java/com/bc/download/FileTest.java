@@ -13,7 +13,8 @@ public class FileTest {
 	@Test
 	public void testFilenameSanitizing() throws Exception {
 		assertEquals("filename.txt", new File("../../filename.txt").getName());
-		assertEquals("/tmp/filename.txt", new File(new File("/tmp"), new File("../etc/filename.txt").getName()).getAbsolutePath());
+		assertEquals(new File("/tmp/filename.txt").getAbsolutePath(), 
+                     new File(new File("/tmp"), new File("../etc/filename.txt").getName()).getAbsolutePath());
 	}
 	
 	@Test
