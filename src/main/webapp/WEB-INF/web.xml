@@ -29,9 +29,9 @@
 		
 	
 	<env-entry>
-		<env-entry-name>downloadDirectory</env-entry-name>
+		<env-entry-name>s3Host</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>/var/downloads/</env-entry-value>
+		<env-entry-value>http://org.esa.beam.s3.amazonaws.com/</env-entry-value>
 	</env-entry>
 
 	<env-entry>

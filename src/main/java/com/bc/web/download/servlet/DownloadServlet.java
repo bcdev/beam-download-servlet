@@ -1,7 +1,6 @@
 package com.bc.web.download.servlet;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -18,7 +17,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -37,254 +35,10 @@ import com.maxmind.geoip.LookupService;
  */
 public class DownloadServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 	private static final String ACCESS_URI = "/access/";
-
-	private static File path = null;
 	private static LookupService geoLookupService = null;
+    private static String s3Host = null;
 	private static long nextId = new Date().getTime();
-	private static String[] countries = new String[] {
-			"Afghanistan",
-			"&Aring;land Islands",
-			"Albania",
-			"Algeria",
-			"American Samoa",
-			"Andorra",
-			"Angola",
-			"Anguilla",
-			"Antarctica",
-			"Antigua and Barbuda",
-			"Argentina",
-			"Armenia",
-			"Aruba",
-			"Australia",
-			"Austria",
-			"Azerbaijan",
-			"Bahamas",
-			"Bahrain",
-			"Bangladesh",
-			"Barbados",
-			"Belarus",
-			"Belgium",
-			"Belize",
-			"Benin",
-			"Bermuda",
-			"Bhutan",
-			"Bolivia",
-			"Bosnia and Herzegovina",
-			"Botswana",
-			"Bouvet Island",
-			"Brazil",
-			"British Indian Ocean territory",
-			"Brunei Darussalam",
-			"Bulgaria",
-			"Burkina Faso",
-			"Burundi",
-			"Cambodia",
-			"Cameroon",
-			"Canada",
-			"Cape Verde",
-			"Cayman Islands",
-			"Central African Republic",
-			"Chad",
-			"Chile",
-			"China",
-			"Christmas Island",
-			"Cocos (Keeling) Islands",
-			"Colombia",
-			"Comoros",
-			"Congo",
-			"Congo, Democratic Republic",
-			"Cook Islands",
-			"Costa Rica",
-			"C&ocirc;te d'Ivoire (Ivory Coast)",
-			"Croatia (Hrvatska)",
-			"Cuba",
-			"Cyprus",
-			"Czech Republic",
-			"Denmark",
-			"Djibouti",
-			"Dominica",
-			"Dominican Republic",
-			"East Timor",
-			"Ecuador",
-			"Egypt",
-			"El Salvador",
-			"Equatorial Guinea",
-			"Eritrea",
-			"Estonia",
-			"Ethiopia",
-			"Falkland Islands",
-			"Faroe Islands",
-			"Fiji",
-			"Finland",
-			"France",
-			"French Guiana",
-			"French Polynesia",
-			"French Southern Territories",
-			"Gabon",
-			"Gambia",
-			"Georgia",
-			"Germany",
-			"Ghana",
-			"Gibraltar",
-			"Greece",
-			"Greenland",
-			"Grenada",
-			"Guadeloupe",
-			"Guam",
-			"Guatemala",
-			"Guinea",
-			"Guinea-Bissau",
-			"Guyana",
-			"Haiti",
-			"Heard and McDonald Islands",
-			"Honduras",
-			"Hong Kong",
-			"Hungary",
-			"Iceland",
-			"India",
-			"Indonesia",
-			"Iran",
-			"Iraq",
-			"Ireland",
-			"Israel",
-			"Italy",
-			"Jamaica",
-			"Japan",
-			"Jordan",
-			"Kazakhstan",
-			"Kenya",
-			"Kiribati",
-			"Korea (north)",
-			"Korea (south)",
-			"Kuwait",
-			"Kyrgyzstan",
-			"Lao People's Democratic Republic",
-			"Latvia",
-			"Lebanon",
-			"Lesotho",
-			"Liberia",
-			"Libyan Arab Jamahiriya",
-			"Liechtenstein",
-			"Lithuania",
-			"Luxembourg",
-			"Macao",
-			"Macedonia, Former Yugoslav Republic Of",
-			"Madagascar",
-			"Malawi",
-			"Malaysia",
-			"Maldives",
-			"Mali",
-			"Malta",
-			"Marshall Islands",
-			"Martinique",
-			"Mauritania",
-			"Mauritius",
-			"Mayotte",
-			"Mexico",
-			"Micronesia",
-			"Moldova",
-			"Monaco",
-			"Mongolia",
-			"Montserrat",
-			"Morocco",
-			"Mozambique",
-			"Myanmar",
-			"Namibia",
-			"Nauru",
-			"Nepal",
-			"Netherlands",
-			"Netherlands Antilles",
-			"New Caledonia",
-			"New Zealand",
-			"Nicaragua",
-			"Niger",
-			"Nigeria",
-			"Niue",
-			"Norfolk Island",
-			"Northern Mariana Islands",
-			"Norway",
-			"Oman",
-			"Pakistan",
-			"Palau",
-			"Palestinian Territories",
-			"Panama",
-			"Papua New Guinea",
-			"Paraguay",
-			"Peru",
-			"Philippines",
-			"Pitcairn",
-			"Poland",
-			"Portugal",
-			"Puerto Rico",
-			"Qatar",
-			"R&eacute;union",
-			"Romania",
-			"Russian Federation",
-			"Rwanda",
-			"Saint Helena",
-			"Saint Kitts and Nevis",
-			"Saint Lucia",
-			"Saint Pierre and Miquelon",
-			"Saint Vincent and the Grenadines",
-			"Samoa",
-			"San Marino",
-			"Sao Tome and Principe",
-			"Saudi Arabia",
-			"Senegal",
-			"Serbia and Montenegro",
-			"Seychelles",
-			"Sierra Leone",
-			"Singapore",
-			"Slovakia",
-			"Slovenia",
-			"Solomon Islands",
-			"Somalia",
-			"South Africa",
-			"South Georgia and the South Sandwich Islands",
-			"Spain",
-			"Sri Lanka",
-			"Sudan",
-			"Suriname",
-			"Svalbard and Jan Mayen Islands",
-			"Swaziland",
-			"Sweden",
-			"Switzerland",
-			"Syria",
-			"Taiwan",
-			"Tajikistan",
-			"Tanzania",
-			"Thailand",
-			"Togo",
-			"Tokelau",
-			"Tonga",
-			"Trinidad and Tobago",
-			"Tunisia",
-			"Turkey",
-			"Turkmenistan",
-			"Turks and Caicos Islands",
-			"Tuvalu",
-			"Uganda",
-			"Ukraine",
-			"United Arab Emirates",
-			"United Kingdom",
-			"United States of America",
-			"Uruguay", 
-			"Uzbekistan", 
-			"Vanuatu", 
-			"Vatican City", 
-			"Venezuela",
-			"Vietnam", 
-			"Virgin Islands (British)", 
-			"Virgin Islands (US)",
-			"Wallis and Futuna Islands", 
-			"Western Sahara", 
-			"Yemen", 
-			"Zaire",
-			"Zambia", 
-			"Zimbabwe" 
-	};
 
 	private static synchronized long getId() {
 		return ++nextId;
@@ -300,18 +54,8 @@ public class DownloadServlet extends HttpServlet {
 		Context initContext;
 		try {
 			initContext = new InitialContext();
-			path = new File((String) initContext
-					.lookup("java:/comp/env/downloadDirectory"));
-			if (!path.exists()) {
-				throw new ServletException("configured downloadDirectory "
-						+ path.getAbsolutePath() + " does not exist.");
-			}
-			if (!path.isDirectory()) {
-				throw new ServletException("configured downloadDirectory "
-						+ path.getAbsolutePath() + " is not a directory.");
-			}
-			String geoLookupDatabaseFile = (String) initContext
-					.lookup("java:/comp/env/geoLookupDatabase");
+            s3Host = (String) initContext.lookup("java:/comp/env/s3Host");
+			String geoLookupDatabaseFile = (String) initContext.lookup("java:/comp/env/geoLookupDatabase");
 			geoLookupService = new LookupService(geoLookupDatabaseFile);
 		} catch (Exception e) {
 			throw new ServletException(e);
@@ -325,8 +69,8 @@ public class DownloadServlet extends HttpServlet {
 	 * some of their data.<br/>
 	 * GET access might later be filtered by user agent or similar.
 	 */
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	@Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String uri = request.getRequestURI();
 		String prefix = request.getContextPath() + ACCESS_URI;
 		if(uri.startsWith(prefix)) {
@@ -334,7 +78,7 @@ public class DownloadServlet extends HttpServlet {
 			// as it only needs to know the URL
 			String what = encode(uri.substring(prefix.length()));
 			System.out.println(what);
-			download(what, request, response);
+			redirectToS3Download(what, request, response);
 		} else {
 			response.sendRedirect("index.jsp?what=" + encode(request.getParameter("what")));
 		}
@@ -344,38 +88,23 @@ public class DownloadServlet extends HttpServlet {
 	 * Provide POST access, that usually comes from the registration page and
 	 * logs user provided data into the database.
 	 */
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	@Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
-		System.out.println(request.getCharacterEncoding());
 		String what = encode(request.getParameter("what"));
-		download(what, request, response);
+		redirectToS3Download(what, request, response);
 	}
 
-	private void download(String what, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private void redirectToS3Download(String what, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		handleCookies(request, response);
-		// currently database dump downloads are handled by the same
-		// routine - cheap safety measures, so that not everyone
-		// can download the mail addresses from everywhere.
-		if(what.startsWith("mysql")) {
-			if(!request.getRemoteAddr().startsWith("141.4.215")) {
-				ServletOutputStream out = response.getOutputStream();
-				response.sendError(401, "Access denied");
-				System.out.println("Denied access to mysql data from " + request.getRemoteAddr());
-				return;
-			} else {
-				System.out.println("Allowing access to mysql data from " + request.getRemoteAddr());
-			}
-		}
 		Location location = geoLookupService.getLocation(request.getRemoteAddr());
 		int status = 200;
 		try {
-			System.out.println("Starting download of " + what + " to " + ( location!=null ? (""+location.city + " " + location.countryName + " (" + request.getRemoteAddr() + ")"):"unknown") );
-			status = streamContent(response, what);
+			System.out.println("Redirecting of " + what + " to " + ( location!=null ? (""+location.city + " " + location.countryName + " (" + request.getRemoteAddr() + ")"):"unknown") );
+            response.sendRedirect(s3Host + decode(what));
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			System.out.println("Finished download of " + what + " to " + ( location!=null ? (""+location.city + " " + location.countryName + " (" + request.getRemoteAddr() + ")"):"unknown") );
+            status = 500;
 		}
 		logToDb(request, response, what, status, location);
 	}
@@ -389,6 +118,8 @@ public class DownloadServlet extends HttpServlet {
 				return "Brockmann-Consultanien";
 			} else	if (remoteAddr.equals("141.4.215.32")) {
 				return "Brockmann-Consultanien";
+            } else	if (remoteAddr.equals("10.3.0.70")) {
+                return "Brockmann-Consultanien";
 			} else if (remoteAddr.startsWith("127.0.0")) {
 				return "Localhostien";
 			}
@@ -401,10 +132,12 @@ public class DownloadServlet extends HttpServlet {
 		}
 	}
 
+    // used from inside the JSP
 	public static String getCountrySelectOptions(HttpServletRequest request) {
 		String autoLocation = getCountry(request).trim();
 		boolean selected = false;
 		StringBuffer buffer = new StringBuffer();
+        String[] countries = CountryList.COUNTRIES;
 		for (int i = 0; i < countries.length; i++) {
 			buffer.append("<option");
 			if (autoLocation.equalsIgnoreCase(countries[i])) {
@@ -442,7 +175,6 @@ public class DownloadServlet extends HttpServlet {
 		HashMap<String, String> cookies = new HashMap<String, String>();
 		if (c != null)
 			for (Cookie cookie : c) {
-//				cookies.put(cookie.getName(), encode(cookie.getValue());
 				cookies.put(cookie.getName(), decode(cookie.getValue()));
 			}
 		return cookies;
@@ -503,21 +235,18 @@ public class DownloadServlet extends HttpServlet {
 			String requestURI) {
 		Cookie cookie = new Cookie(name, value);
 		cookie.setPath(requestURI);
-		cookie.setMaxAge((int) (3600 * 24 * 365 * 3));
+		cookie.setMaxAge(3600 * 24 * 365 * 3);
 		return cookie;
 	}
 
 	private void logToDb(HttpServletRequest request,
-			HttpServletResponse response, String what, int status,
-			Location location) {
+			HttpServletResponse response, String what, int status, Location location) {
 		Context initContext;
 		try {
 			initContext = new InitialContext();
-			DataSource ds = (DataSource) initContext
-					.lookup("java:/comp/env/jdbc/download");
+			DataSource ds = (DataSource) initContext.lookup("java:/comp/env/jdbc/download");
 			Connection conn = ds.getConnection();
-			PreparedStatement stmt = conn
-					.prepareStatement("INSERT INTO access_log( "
+			PreparedStatement stmt = conn.prepareStatement("INSERT INTO access_log( "
 							+ "id, agent, request_file, referer, remote_host, "
 							+ "request_protocol, request_uri, status, time_stamp, "
 							+ "bc_name, bc_mail, bc_location, bc_comment, bc_what,"
@@ -525,11 +254,10 @@ public class DownloadServlet extends HttpServlet {
 							+ "bc_longitude, bc_region) VALUES ("
 							+ "?, ?, ?, ?, ?, ?, " + "?, ?, ?,"
 							+ "?, ?, ?, ?, ?," + "?, ?, ?, ?," + "?, ? )");
-			int i = 1; // makes it easier to add parameters somewhere in the
-						// middle...
+			int i = 1; // makes it easier to add parameters somewhere in the middle...
 			stmt.setLong(i++, getId());
 			stmt.setString(i++, request.getHeader("User-Agent"));
-			stmt.setString(i++, what);
+			stmt.setString(i++, getFilename(what));
 			stmt.setString(i++, request.getHeader("Referer"));
 			stmt.setString(i++, request.getRemoteAddr());
 			stmt.setString(i++, request.getProtocol());
@@ -582,72 +310,21 @@ public class DownloadServlet extends HttpServlet {
 		return parameter;
 	}
 
-	private int streamContent(HttpServletResponse response, String what) {
-		try {
-			FileInputStream in = null;
-			File theFile = new File(path, sanitizeFilename(what));
-			if (!theFile.exists() || theFile.isDirectory()) {
-				response.sendRedirect("404.jsp?what=" + theFile.getName());
-				return 404;
-			}
-			ServletOutputStream out = null;
-			try {
-				out = response.getOutputStream();
-				in = new FileInputStream(theFile);
-
-				response.setContentType(getContentType(what));
-				String attachment = "attachment; filename=" + theFile.getName();
-				response.setHeader("Content-Disposition", attachment);
-
-				if (theFile.length() > 0) {
-					response.setContentLength((int) theFile.length());
-				}
-				response.setHeader("Cache-Control", "private");
-				response.setHeader("Pragma", "private");
-
-				int len;
-				byte[] buffer = new byte[1024];
-				while ((len = in.read(buffer)) > 0) {
-					out.write(buffer, 0, len);
-				}
-			} finally {
-				if (in != null) {
-					in.close();
-				}
-				out.close();
-			}
-			return 200;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return 500;
-		}
+    // used from inside the JSP
+	public static boolean exists(String fileName) {
+        // check no longer possible since we are using S3
+        return true;
+//		File theFile = new File(path, sanitizeFilename(fileName));
+//		return theFile.exists() && !theFile.isDirectory();
 	}
 
-	public static boolean exists(String fileName) {
-		File theFile = new File(path, sanitizeFilename(fileName));
-		return theFile.exists() && !theFile.isDirectory();
+    // used from inside the JSP
+    public static String getFilename(String what) {
+        int slashIndex = what.lastIndexOf("/");
+        return what.substring(slashIndex + 1);
 	}
 
 	private static String sanitizeFilename(String what) {
 		return new File(what).getName();
-	}
-
-	/**
-	 * seeeeeehr plump- Das gibt's irgendwo besser...
-	 */
-	private String getContentType(String fileName) {
-		if (fileName.endsWith(".zip")) {
-			return "application/zip";
-		} else if (fileName.endsWith(".gz")) {
-			return "application/x-gzip";
-		} else if (fileName.endsWith(".sh")) {
-			return "application/x-sh";
-		} else if (fileName.endsWith(".txt")) {
-			return "text/plain";
-		} else if (fileName.endsWith(".html")) {
-			return "text/html";
-		} else {
-			return "application/octet-stream";
-		}
 	}
 }
